@@ -25,7 +25,7 @@ namespace AppSettings.Generator
                 return;
             }
 
-            //Debugger.Launch();
+            // Debugger.Launch();
             var resourceFiles = context.AdditionalFiles
                     .Where(f =>
                     Path.GetFileNameWithoutExtension(f.Path)?

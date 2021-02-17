@@ -40,19 +40,19 @@ namespace AppSettings.Generator
                 return "byte";
             }
 
-            if (DateTime.TryParse(value, out var dateTimeResult))
-            {
-                return "DateTime";
-            }
-
             if (TimeSpan.TryParse(value, out var timeSpanResult))
             {
-                return "TimeSpan";
+                return "System.TimeSpan";
+            }
+
+            if (DateTime.TryParse(value, out var dateTimeResult))
+            {
+                return "System.DateTime";
             }
 
             if (Guid.TryParse(value, out var guidResult))
             {
-                return "Guid";
+                return "System.Guid";
             }
 
             return "string";

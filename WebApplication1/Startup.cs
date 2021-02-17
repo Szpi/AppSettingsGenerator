@@ -11,6 +11,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Generated.Configuration;
+using Microsoft.Extensions.Options;
+using LogLevel = Generated.Configuration.LogLevel;
 
 namespace WebApplication1
 {
@@ -29,11 +31,15 @@ namespace WebApplication1
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+            services.Configure<Testooooo>(Configuration.GetSection("Testooooo"));
+            var a = new LogLevel();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            var a = Configuration.GetValue<bool>("Testooooo:Flag");
+            var test = app.ApplicationServices.GetService<IOptions<Testooooo>>();
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
