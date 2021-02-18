@@ -16,6 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\AppSettings.Generator.Extensions\AppSettings.Generator.Extensions.csproj" />
     <ProjectReference Include="..\AppSettings.Generator\AppSettings.Generator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
   </ItemGroup>
 

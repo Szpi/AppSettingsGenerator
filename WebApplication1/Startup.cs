@@ -32,6 +32,7 @@ namespace WebApplication1
         {
             services.AddControllers();
             services.Configure<Testooooo>(Configuration.GetSection("Testooooo"));
+            services.Configure<AppSettings>(Configuration);
             var a = new LogLevel();
         }
 
@@ -39,7 +40,8 @@ namespace WebApplication1
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             var a = Configuration.GetValue<bool>("Testooooo:Flag");
-            var test = app.ApplicationServices.GetService<IOptions<Testooooo>>();
+            var test = app.ApplicationServices.GetService<IOptions<AppSettings>>();
+            //var b = test.Value.GetTestEnum();
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

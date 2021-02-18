@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AppSettings.Generator.Tests
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AppSettings.Generator", "AppSettings.Generator\AppSettings.Generator.csproj", "{4C5DD704-A2BB-4E79-9E72-046919E9A919}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AppSettings.Generator.Extensions", "AppSettings.Generator.Extensions\AppSettings.Generator.Extensions.csproj", "{1D150411-F7D9-4E3B-9ED1-3D30BD49EC92}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{4C5DD704-A2BB-4E79-9E72-046919E9A919}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4C5DD704-A2BB-4E79-9E72-046919E9A919}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4C5DD704-A2BB-4E79-9E72-046919E9A919}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1D150411-F7D9-4E3B-9ED1-3D30BD49EC92}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1D150411-F7D9-4E3B-9ED1-3D30BD49EC92}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1D150411-F7D9-4E3B-9ED1-3D30BD49EC92}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1D150411-F7D9-4E3B-9ED1-3D30BD49EC92}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -10,7 +10,7 @@
 using System.CodeDom.Compiler;
 using System.Runtime.CompilerServices;
 
-namespace Generated.Configuration
+namespace Configuration.Generated
 {
     [CompilerGenerated]
     public partial class {{ ClassName }}
