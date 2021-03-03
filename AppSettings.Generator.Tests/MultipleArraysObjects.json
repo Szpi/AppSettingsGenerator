@@ -1,0 +1,29 @@
+{
+  "name": "John",
+  "age": 30,
+  "cars": [
+    {
+      "name": "Ford",
+      "models": [
+        { "name": "Fiesta" },
+        { "name": "Focus" },
+        { "name": "Mustang" }
+      ]
+    },
+    {
+      "name": "BMW",
+      "models": [
+        { "name": "320" },
+        { "name": "X3" },
+        { "name": "X5" }
+      ]
+    },
+    {
+      "name": "Fiat",
+      "models": [
+        { "name": "500" },
+        { "name": "Panda" }
+      ]
+    }
+  ]
+}

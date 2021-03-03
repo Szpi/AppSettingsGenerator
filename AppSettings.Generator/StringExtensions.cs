@@ -1,16 +1,16 @@
-﻿using System;
+﻿using Newtonsoft.Json.Linq;
+using System;
+using System.CodeDom.Compiler;
 using System.Linq;
 
-namespace AppSettings.Generator
+namespace AppSettingsGenerator
 {
     internal static class StringExtensions
     {
-        public static string Sanitize(this string s)
+        private static readonly CodeDomProvider provider = CodeDomProvider.CreateProvider("C#");
+        public static string CreateValidIdentifier(this string s)
         {
-            return string.Join("", s.AsEnumerable()
-                                    .Select(chr => Char.IsLetter(chr) || Char.IsDigit(chr)
-                                                   ? chr.ToString()
-                                                   : ""));
+            return provider.CreateValidIdentifier(s);
         }
 
         public static string GetTypeToGenerate(this string value)

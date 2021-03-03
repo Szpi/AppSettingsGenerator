@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Reflection;
 
-namespace AppSettings.Generator
+namespace AppSettingsGenerator
 {
     public class Model
     {

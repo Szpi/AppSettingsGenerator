@@ -1,20 +1,19 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using System.Runtime.CompilerServices;
+
+using Newtonsoft.Json.Linq;
 using Scriban;
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
 
-namespace AppSettings.Generator
+[assembly: InternalsVisibleTo("AppSettingsGenerator.Tests")]
+namespace AppSettingsGenerator
 {
-    public class ConfigGenerator
+    internal class ConfigGenerator
     {
         public IEnumerable<(string fileName, string generatedClass)> Generate(string filePath)
         {
             var config = JObject.Parse(File.ReadAllText(filePath));
-            var test = new List<string>();
 
             var configJProperties = config.Descendants()
                 .OfType<JProperty>()
@@ -22,34 +21,83 @@ namespace AppSettings.Generator
                 .GroupBy(x => x.Ancestors().OfType<JProperty>().FirstOrDefault()?.Name ?? string.Empty)
                 .ToList();
 
-            var file = "CSharp.sbntxt";
+            var file = "AppSettings.sbntxt";
             var template = Template.Parse(EmbeddedResource.GetContent(file), file);
 
             var outputList = new List<(string fileName, string generatedClass)>();
 
+            var classNames = new List<string>();
             foreach (var grouppedProperties in configJProperties)
             {
-                var properties = new List<KeyValuePair<string, string>>();
-                foreach (var property in grouppedProperties)
-                {
-                    var sanitizedName = property.Name.Sanitize();
-                    var type = property.Value.Children().Any() ? sanitizedName : property.Value.ToString().GetTypeToGenerate();
-                    properties.Add(new KeyValuePair<string, string>(type, sanitizedName));
-                }
+                var properties = GenerateProperties(grouppedProperties);
 
-                var className = grouppedProperties.Key.Sanitize();
+                if (!properties.Any())
+                {
+                    continue;
+                }
+                
+                var className = grouppedProperties.Key.CreateValidIdentifier();
                 if (string.IsNullOrWhiteSpace(className))
                 {
                     className = "AppSettings";
                 }
+                classNames.Add(className);
                 var model = new Model(className, properties);
                 var output = template.Render(model, member => member.Name);
 
                 outputList.Add(($"{className}.cs", output));
             }
 
+            var fileServiceCollectionExtensions = "ServiceCollectionExtensions.sbntxt";
+            var templateServiceCollectionExtensions = Template.Parse(EmbeddedResource.GetContent(fileServiceCollectionExtensions), fileServiceCollectionExtensions);
+            var classNamesModel = new ClassNamesModel()
+            {
+                ClassNames = classNames
+            };
+            var outputServiceCollectionExtensions = templateServiceCollectionExtensions.Render(classNamesModel, member => member.Name);
+            outputList.Add(("ServiceCollectionExtensions.cs", outputServiceCollectionExtensions));
+
             return outputList;
         }
-    }
+
+        private List<KeyValuePair<string, string>> GenerateProperties(IGrouping<string, JProperty> grouppedProperties)
+        {
+            var properties = new List<KeyValuePair<string, string>>();            
+
+            foreach (var property in grouppedProperties.Distinct(new JPropertyEqualityComparer()))
+            {
+                var (sanitizedName, type) = GetTypeAndName(property);
+                properties.Add(new KeyValuePair<string, string>(type, sanitizedName));
+            }
+
+            return properties;
+        }
+
+        private static (string sanitizedName, string type) GetTypeAndName(JProperty property)
+        {            
+            var sanitizedName = property.Name.CreateValidIdentifier();
+           
+            var type = string.Empty;
+            if (property.Value.Type == JTokenType.Array)
+            {
+                if (property.Value.Children().All(x => x.Type != JTokenType.Object))
+                {
+                    var childrenTypes = property.Value.Children().Cast<JValue>().Select(x => x.Value.ToString().GetTypeToGenerate());
+                    type = childrenTypes.Distinct().Count() == 1 ? $"System.Generic.List<{childrenTypes.First()}>" : "System.Generic.List<string>";
+                }
+                else
+                {
+                    type = $"System.Generic.List<{sanitizedName}>";
+                }
+                return (sanitizedName, type);
+            }
+            else
+            {
+                type = property.Value.Children().Any() ? sanitizedName : property.Value.ToString().GetTypeToGenerate();
+            }
+
+            return (sanitizedName, type);
+        }
+    }    
 
 }

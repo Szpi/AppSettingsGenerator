@@ -1,4 +1,16 @@
 {
+  "MyArray": [
+    {
+      "logger": "*",
+      "minLevel": "Trace",
+      "writeTo": "file-all"
+    },
+    {
+      "logger": "*",
+      "minLevel": "Trace",
+      "writeTo": "file-all"
+    }
+  ],
   "Logging": {
     "LogLevel": {
       "Microsoft.[Hosting].Lifetime": "Information",

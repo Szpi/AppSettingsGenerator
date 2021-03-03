@@ -1,11 +1,12 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
 
-namespace AppSettings.Generator
+namespace AppSettingsGenerator
 {
     [Generator]
     public class AppSettingsConfigSourceGenerator : ISourceGenerator
@@ -16,15 +17,6 @@ namespace AppSettings.Generator
 
         public void Execute(GeneratorExecutionContext context)
         {
-            if (!context.Compilation.ReferencedAssemblyNames.Any(ai => ai.Name.Equals("Newtonsoft.Json", StringComparison.OrdinalIgnoreCase)))
-            {
-                context.ReportDiagnostic(Diagnostic.Create(
-                    new DiagnosticDescriptor("APG001", "Newtonsoft.Json not found", "Newtonsoft.Json dependency not found", "Compiler", DiagnosticSeverity.Error, true)
-                    , null));
-                return;
-            }
-
-            //Debugger.Launch();
             var resourceFiles = context.AdditionalFiles
                     .Where(f =>
                     Path.GetFileNameWithoutExtension(f.Path)?
@@ -33,7 +25,7 @@ namespace AppSettings.Generator
             if (!resourceFiles.Any())
             {
                 context.ReportDiagnostic(Diagnostic.Create(
-                    new DiagnosticDescriptor("APG002", "AppSettings configuration not found", "AppSettings configuration not found. Please add appsettings.json file as AdditionalFiles property in project configuration (.csproj)", "Compiler", DiagnosticSeverity.Error, true)
+                    new DiagnosticDescriptor("APG001", "AppSettings configuration not found", "AppSettings configuration not found. Please add appsettings.json file as AdditionalFiles property in project configuration (.csproj)", "Compiler", DiagnosticSeverity.Error, true)
                     , null));
                 return;
             }

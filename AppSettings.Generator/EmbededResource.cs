@@ -1,7 +1,8 @@
 ﻿using System;
 using System.IO;
 using System.Reflection;
-namespace AppSettings.Generator
+
+namespace AppSettingsGenerator
 {
     static class EmbeddedResource
     {
@@ -23,8 +24,8 @@ namespace AppSettings.Generator
                 .GetManifestResourceStream(baseName + "." + resourceName))
             using (var reader = new StreamReader(stream))
             {
-            if (stream == null)
-                throw new NotSupportedException();
+                if (stream == null)
+                    throw new NotSupportedException();
                 return reader.ReadToEnd();
             }
         }

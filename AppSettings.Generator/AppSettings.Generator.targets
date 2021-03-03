@@ -1,3 +1,0 @@
-<ItemGroup>
-    <AdditionalFiles Include="appsettings.Development.json" />
- </ItemGroup>

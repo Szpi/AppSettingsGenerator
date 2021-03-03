@@ -1,0 +1,18 @@
+{
+  "number_1": 210,
+  "number_2": -210,
+  "number_3": 21.05,
+  "number_4": 1.0E+2,
+  "bool_1": true,
+  "bool_2": "true",
+  "popularity": null,
+  "object": {
+    "visibility": true,
+    "popularity": "immense",
+    "id": 210
+  },
+  "Timespan_1": "00:01:00",
+  "DateTime_1": "1/1/0001 12:00:00 AM",
+  "Array_1": [ "1/1/0001 12:00:00 AM", "1/1/0001 12:00:00 AM" ],
+  "Array_2": [ "1/1/0001 12:00:00 AM", "2", true ],
+}

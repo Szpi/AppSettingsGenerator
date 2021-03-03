@@ -7,11 +7,23 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="appsettings.Development.json" />
+    <None Remove="BasicDataTypes.json" />
+    <None Remove="MultipleArrays.json" />
+    <None Remove="MultipleArraysObjects.json" />
+    <None Remove="MyArray.json" />
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="appsettings.Development.json">
+    <Content Include="BasicDataTypes.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MultipleArraysObjects.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MultipleArrays.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MyArray.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
@@ -25,7 +37,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\AppSettings.Generator\AppSettings.Generator.csproj" />
+    <ProjectReference Include="..\AppSettings.Generator\AppSettingsGenerator.csproj" />
   </ItemGroup>
 
 </Project>

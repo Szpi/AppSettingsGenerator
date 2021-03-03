@@ -1,0 +1,75 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <PackOnBuild>true</PackOnBuild>
+    <PackFolder>analyzers\cs</PackFolder>
+    <DebugType>embedded</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+    <LangVersion>Preview</LangVersion>
+    <!--<Nullable>enable</Nullable>-->
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+
+    <DefaultItemExcludes>$(DefaultItemExcludes);*.binlog;*.zip</DefaultItemExcludes>
+    <IsPackable>true</IsPackable>
+    <PackBuildOutput>false</PackBuildOutput>
+    <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="AppSettings.sbntxt" />
+    <None Remove="ServiceCollectionExtensions.sbntxt" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="ServiceCollectionExtensions.sbntxt" />
+    <EmbeddedResource Include="AppSettings.sbntxt">
+    </EmbeddedResource>
+  </ItemGroup>
+  <!--<ItemGroup>
+    <None Include="$(OutputPath)\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+  </ItemGroup>-->
+
+  <!--<ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" PrivateAssets="all" Pack="true" />
+    <PackageReference Include="Scriban" Version="3.0.2" PrivateAssets="all" Pack="true" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="3.8.0" Pack="false" />
+    <PackageReference Include="System.Collections.Immutable" Version="5.0.0-preview.*" Pack="false" />
+    <PackageReference Include="System.Reflection.Metadata" Version="5.0.0.*" Pack="false" />
+  </ItemGroup>-->
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="3.8.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" GeneratePathProperty="true" PrivateAssets="all" />
+    <PackageReference Include="Scriban" Version="3.0.2" GeneratePathProperty="true" PrivateAssets="all" />
+    <PackageReference Include="System.CodeDom" Version="6.0.0-preview.1.21102.12" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <GetTargetPathDependsOn>$(GetTargetPathDependsOn);GetDependencyTargetPaths</GetTargetPathDependsOn>
+    <Copyright>Piotr Szkudlarski</Copyright>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <RepositoryUrl>https://github.com/Szpi/AppSettingsGenerator</RepositoryUrl>
+    <Description>SourceGenerator that generates configuration stored in appsettings.json</Description>
+  </PropertyGroup>
+
+  <Target Name="GetDependencyTargetPaths">
+    <ItemGroup>
+      <TargetPathWithTargetPlatformMoniker Include="$(PKGNewtonsoft_Json)\lib\netstandard2.0\Newtonsoft.Json.dll" IncludeRuntimeDependency="false" />
+      <TargetPathWithTargetPlatformMoniker Include="$(PKGScriban)\lib\netstandard2.0\Scriban.dll" IncludeRuntimeDependency="false" />
+    </ItemGroup>
+  </Target>
+  
+  <PropertyGroup>    
+    <Copyright>Piotr Szkudlarski</Copyright>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <RepositoryUrl>https://github.com/Szpi/AppSettingsGenerator</RepositoryUrl>
+    <Description>SourceGenerator that generates configuration stored in appsettings.json</Description>
+    <Authors>Piotr Szkudlarski</Authors>
+    <Company>Piotr Szkudlarski</Company>
+    <PackageId>AppSettingsGenerator</PackageId>
+    <Product>AppSettingsGenerator</Product>
+    <AssemblyName>AppSettingsGenerator</AssemblyName>
+    <Version>1.0.0</Version>
+  </PropertyGroup>
+</Project>

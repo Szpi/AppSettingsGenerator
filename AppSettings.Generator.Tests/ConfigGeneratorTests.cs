@@ -1,6 +1,9 @@
-﻿using NUnit.Framework;
+﻿using AppSettingsGenerator;
+using FluentAssertions;
+using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace AppSettings.Generator.Tests
@@ -16,9 +19,43 @@ namespace AppSettings.Generator.Tests
         }
 
         [Test]
-        public void test()
+        public void Generate_FromMyArrayFile_ShouldContains_ListOfMyArray()
         {
-            _configGenerator.Generate("appsettings.Development.json");
+            var generated = _configGenerator.Generate("MyArray.json");
+
+            generated.Select(x => x.fileName).Should().ContainSingle(x => x == "MyArray.cs");
+            var appsettings = generated.FirstOrDefault(x => x.fileName == "AppSettings.cs");
+
+            appsettings.generatedClass.Should().Contain("public System.Generic.List<MyArray> MyArray { get; set; }");
         }
+
+        [Test]
+        public void Generate_FromMultipleArrays_ShouldContains_ListOfMyArray()
+        {
+            var generated = _configGenerator.Generate("MultipleArrays.json");
+
+            generated.Select(x => x.fileName).Should().ContainSingle(x => x == "cars.cs");
+            generated.Select(x => x.fileName).Should().NotContain(x => x == "models.cs");
+            var appsettings = generated.FirstOrDefault(x => x.fileName == "AppSettings.cs");
+            var cars = generated.FirstOrDefault(x => x.fileName == "cars.cs");
+
+            appsettings.generatedClass.Should().Contain("public System.Generic.List<cars> cars { get; set; }");
+            cars.generatedClass.Should().Contain("public System.Generic.List<string> models { get; set; }");
+        }
+
+        [Test]
+        public void Generate_FromMultipleArraysObjects_ShouldContains_ListOfMyArray()
+        {
+            var generated = _configGenerator.Generate("MultipleArraysObjects.json");
+
+            generated.Select(x => x.fileName).Should().ContainSingle(x => x == "cars.cs");
+            generated.Select(x => x.fileName).Should().ContainSingle(x => x == "models.cs");
+            var appsettings = generated.FirstOrDefault(x => x.fileName == "AppSettings.cs");
+            var cars = generated.FirstOrDefault(x => x.fileName == "cars.cs");
+
+            appsettings.generatedClass.Should().Contain("public System.Generic.List<cars> cars { get; set; }");
+            cars.generatedClass.Should().Contain("public System.Generic.List<models> models { get; set; }");
+        }
+        
     }
 }
