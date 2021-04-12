@@ -5,8 +5,8 @@ using Scriban;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-
 [assembly: InternalsVisibleTo("AppSettingsGenerator.Tests")]
+
 namespace AppSettingsGenerator
 {
     internal class ConfigGenerator
@@ -35,8 +35,13 @@ namespace AppSettingsGenerator
                 {
                     continue;
                 }
-                
-                var className = grouppedProperties.Key.CreateValidIdentifier();
+
+                if (!grouppedProperties.Key.IsIdentifierValid())
+                {
+                    continue;
+                }
+
+                var className = grouppedProperties.Key;
                 if (string.IsNullOrWhiteSpace(className))
                 {
                     className = "AppSettings";
@@ -66,6 +71,11 @@ namespace AppSettingsGenerator
 
             foreach (var property in grouppedProperties.Distinct(new JPropertyEqualityComparer()))
             {
+                if (!property.Name.IsIdentifierValid())
+                {
+                    continue;
+                }
+
                 var (sanitizedName, type) = GetTypeAndName(property);
                 properties.Add(new KeyValuePair<string, string>(type, sanitizedName));
             }
@@ -75,7 +85,7 @@ namespace AppSettingsGenerator
 
         private static (string sanitizedName, string type) GetTypeAndName(JProperty property)
         {            
-            var sanitizedName = property.Name.CreateValidIdentifier();
+            var sanitizedName = property.Name;
            
             var type = string.Empty;
             if (property.Value.Type == JTokenType.Array)

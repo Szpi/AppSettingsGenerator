@@ -2,16 +2,34 @@
 using System;
 using System.CodeDom.Compiler;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace AppSettingsGenerator
 {
     internal static class StringExtensions
     {
         private static readonly CodeDomProvider provider = CodeDomProvider.CreateProvider("C#");
-        public static string CreateValidIdentifier(this string s)
+
+        public static bool IsIdentifierValid(this string s)
         {
-            return provider.CreateValidIdentifier(s);
+            return provider.IsValidIdentifier(s) || string.IsNullOrWhiteSpace(s);
         }
+
+        //public static string CreateValidIdentifier(this string s)
+        //{
+        //    return s;
+        //    //if(provider.IsValidIdentifier(s) || string.IsNullOrWhiteSpace(s))
+        //    //{
+        //    //    return s;
+        //    //}
+
+        //    //var regex = new Regex(@"[^\p{Ll}\p{Lu}\p{Lt}\p{Lo}\p{Nd}\p{Nl}\p{Mn}\p{Mc}\p{Cf}\p{Pc}\p{Lm}]");
+        //    //var validIdentifier = regex.Replace(s, "");
+
+        //    //validIdentifier = provider.CreateValidIdentifier(validIdentifier);
+
+        //    //return validIdentifier;
+        //}
 
         public static string GetTypeToGenerate(this string value)
         {

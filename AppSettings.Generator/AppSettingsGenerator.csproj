@@ -39,26 +39,26 @@
   </ItemGroup>-->
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="3.8.0" />
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" GeneratePathProperty="true" PrivateAssets="all" />
-    <PackageReference Include="Scriban" Version="3.0.2" GeneratePathProperty="true" PrivateAssets="all" />
-    <PackageReference Include="System.CodeDom" Version="6.0.0-preview.1.21102.12" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="3.8.0" Pack="false" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" PrivateAssets="all" Pack="true" />
+    <PackageReference Include="Scriban" Version="3.0.2" PrivateAssets="all" Pack="true" />
+    <PackageReference Include="System.CodeDom" Version="6.0.0-preview.1.21102.12" Pack="true" />
   </ItemGroup>
 
   <PropertyGroup>
-    <GetTargetPathDependsOn>$(GetTargetPathDependsOn);GetDependencyTargetPaths</GetTargetPathDependsOn>
+    <!--<GetTargetPathDependsOn>$(GetTargetPathDependsOn);GetDependencyTargetPaths</GetTargetPathDependsOn>-->
     <Copyright>Piotr Szkudlarski</Copyright>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <RepositoryUrl>https://github.com/Szpi/AppSettingsGenerator</RepositoryUrl>
     <Description>SourceGenerator that generates configuration stored in appsettings.json</Description>
   </PropertyGroup>
 
-  <Target Name="GetDependencyTargetPaths">
+  <!--<Target Name="GetDependencyTargetPaths">
     <ItemGroup>
       <TargetPathWithTargetPlatformMoniker Include="$(PKGNewtonsoft_Json)\lib\netstandard2.0\Newtonsoft.Json.dll" IncludeRuntimeDependency="false" />
       <TargetPathWithTargetPlatformMoniker Include="$(PKGScriban)\lib\netstandard2.0\Scriban.dll" IncludeRuntimeDependency="false" />
     </ItemGroup>
-  </Target>
+  </Target>-->
   
   <PropertyGroup>    
     <Copyright>Piotr Szkudlarski</Copyright>
@@ -70,6 +70,7 @@
     <PackageId>AppSettingsGenerator</PackageId>
     <Product>AppSettingsGenerator</Product>
     <AssemblyName>AppSettingsGenerator</AssemblyName>
-    <Version>1.0.0</Version>
+    <Version>1.0.1</Version>
   </PropertyGroup>
+  
 </Project>

@@ -10,9 +10,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Generated.Configuration;
 using Microsoft.Extensions.Options;
-using LogLevel = Generated.Configuration.LogLevel;
+//using Configuration.Generated;
 
 namespace WebApplication1
 {
@@ -20,7 +19,7 @@ namespace WebApplication1
     {
         public Startup(IConfiguration configuration)
         {
-            var test = new AppSettings();
+            //var test = new AppSettings();
             //ThisAssembly.Strings.aaa;
             Configuration = configuration;
         }
@@ -31,16 +30,23 @@ namespace WebApplication1
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
-            services.Configure<Testooooo>(Configuration.GetSection("Testooooo"));
-            services.Configure<AppSettings>(Configuration);
-            var a = new LogLevel();
+            //services.Configure<Testooooo>(Configuration.GetSection("Testooooo"));
+            //services.Configure<AppSettings>(Configuration);
+            services.Configure<WebApplication1.MySettings>(Configuration.GetSection("My.Settings"));
+            //services.ConfigureAppSettings(Configuration);
+            //services.ConfigureTestooooo(Configuration);
+            //services.ConfigureAllSections(Configuration);
+            //services.ConfigureTestooooo(Configuration);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             var a = Configuration.GetValue<bool>("Testooooo:Flag");
-            var test = app.ApplicationServices.GetService<IOptions<AppSettings>>();
+            //var test = app.ApplicationServices.GetService<IOptions<AppSettings>>();
+           // var test1 = app.ApplicationServices.GetService<IOptions<MySettings>>();
+            //var sdas = test1.Value.MyTest;
+            //var sdas1 = sdas.my;
             //var b = test.Value.GetTestEnum();
             if (env.IsDevelopment())
             {

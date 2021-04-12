@@ -35,7 +35,8 @@ namespace AppSettings.Generator.Tests
 
             appsettings.generatedClass.Should().Contain("public string popularity { get; set; }");
 
-            appsettings.generatedClass.Should().Contain("public _object _object { get; set; }");
+            //invalid
+            appsettings.generatedClass.Should().NotContain("public _object _object { get; set; }");
 
             appsettings.generatedClass.Should().Contain("public System.TimeSpan Timespan_1 { get; set; }");
             appsettings.generatedClass.Should().Contain("public System.DateTime DateTime_1 { get; set; }");

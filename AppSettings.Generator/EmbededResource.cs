@@ -4,7 +4,7 @@ using System.Reflection;
 
 namespace AppSettingsGenerator
 {
-    static class EmbeddedResource
+    internal static class EmbeddedResource
     {
         static readonly string baseDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 

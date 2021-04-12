@@ -30,6 +30,17 @@ namespace AppSettings.Generator.Tests
         }
 
         [Test]
+        public void Generate_FromMyArrayFile_Should_CreateValidIdentifier()
+        {
+            var generated = _configGenerator.Generate("MyArray.json");
+
+            generated.Select(x => x.fileName).Should().ContainSingle(x => x == "MyArray.cs");
+            var logLevel = generated.FirstOrDefault(x => x.fileName == "LogLevel2.cs");
+
+            logLevel.generatedClass.Should().NotContain("Microsoft,[Hosting,Lifetime1");
+        }
+
+        [Test]
         public void Generate_FromMultipleArrays_ShouldContains_ListOfMyArray()
         {
             var generated = _configGenerator.Generate("MultipleArrays.json");

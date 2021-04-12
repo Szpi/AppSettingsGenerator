@@ -4,7 +4,7 @@ using System.Reflection;
 
 namespace AppSettingsGenerator
 {
-    public class Model
+    internal class Model
     {
         public Model(string className, IEnumerable<KeyValuePair<string, string>> properties)
         {

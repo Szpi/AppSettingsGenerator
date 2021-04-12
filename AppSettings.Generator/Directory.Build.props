@@ -1,0 +1,5 @@
+<Project>
+  <PropertyGroup>   
+    <PackFolder>analyzers\cs</PackFolder>
+  </PropertyGroup>
+</Project>
