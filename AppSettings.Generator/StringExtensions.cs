@@ -15,21 +15,15 @@ namespace AppSettingsGenerator
             return provider.IsValidIdentifier(s) || string.IsNullOrWhiteSpace(s);
         }
 
-        //public static string CreateValidIdentifier(this string s)
-        //{
-        //    return s;
-        //    //if(provider.IsValidIdentifier(s) || string.IsNullOrWhiteSpace(s))
-        //    //{
-        //    //    return s;
-        //    //}
+        public static string Sanitize(this string s)
+        {
+            var regex = new Regex(@"[^\p{Ll}\p{Lu}\p{Lt}\p{Lo}\p{Nd}\p{Nl}\p{Mn}\p{Mc}\p{Cf}\p{Pc}\p{Lm}]");
+            var validIdentifier = regex.Replace(s, "");
 
-        //    //var regex = new Regex(@"[^\p{Ll}\p{Lu}\p{Lt}\p{Lo}\p{Nd}\p{Nl}\p{Mn}\p{Mc}\p{Cf}\p{Pc}\p{Lm}]");
-        //    //var validIdentifier = regex.Replace(s, "");
+            validIdentifier = provider.CreateValidIdentifier(validIdentifier);
 
-        //    //validIdentifier = provider.CreateValidIdentifier(validIdentifier);
-
-        //    //return validIdentifier;
-        //}
+            return validIdentifier;
+        }
 
         public static string GetTypeToGenerate(this string value)
         {

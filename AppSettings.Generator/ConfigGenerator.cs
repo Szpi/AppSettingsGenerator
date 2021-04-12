@@ -25,12 +25,22 @@ namespace AppSettingsGenerator
             var template = Template.Parse(EmbeddedResource.GetContent(file), file);
 
             var outputList = new List<(string fileName, string generatedClass)>();
+            var classNames = GenerateConfig(configJProperties, template, outputList);
 
+            outputList = GenerateServiceExtensions(outputList, classNames);
+
+            return outputList;
+        }
+
+        private List<string> GenerateConfig(List<IGrouping<string, JProperty>> configJProperties, Template template, List<(string fileName, string generatedClass)> outputList)
+        {
             var classNames = new List<string>();
+            var configurationExtensionsModel = new List<ConfigurationExtensionsModel>();
             foreach (var grouppedProperties in configJProperties)
             {
-                var properties = GenerateProperties(grouppedProperties);
+                var (properties, configurationExtensions) = GenerateProperties(grouppedProperties);
 
+                configurationExtensionsModel.AddRange(configurationExtensions);
                 if (!properties.Any())
                 {
                     continue;
@@ -53,6 +63,12 @@ namespace AppSettingsGenerator
                 outputList.Add(($"{className}.cs", output));
             }
 
+            outputList = GenerateInvalidIdentifiers(outputList, configurationExtensionsModel.Distinct().ToList());
+            return classNames;
+        }
+
+        private static List<(string fileName, string generatedClass)> GenerateServiceExtensions(List<(string fileName, string generatedClass)> outputList, List<string> classNames)
+        {
             var fileServiceCollectionExtensions = "ServiceCollectionExtensions.sbntxt";
             var templateServiceCollectionExtensions = Template.Parse(EmbeddedResource.GetContent(fileServiceCollectionExtensions), fileServiceCollectionExtensions);
             var classNamesModel = new ClassNamesModel()
@@ -65,28 +81,57 @@ namespace AppSettingsGenerator
             return outputList;
         }
 
-        private List<KeyValuePair<string, string>> GenerateProperties(IGrouping<string, JProperty> grouppedProperties)
+        private List<(string fileName, string generatedClass)> GenerateInvalidIdentifiers(List<(string fileName, string generatedClass)> outputList, List<ConfigurationExtensionsModel> configurationExtensions)
         {
-            var properties = new List<KeyValuePair<string, string>>();            
+            if (!configurationExtensions.Any())
+            {
+                return outputList;
+            }
+
+            var fileConfigurationExtensions = "IConfigurationExtensions.sbntxt";
+            var templateServiceCollectionExtensions = Template.Parse(EmbeddedResource.GetContent(fileConfigurationExtensions), fileConfigurationExtensions);
+            var classNamesModel = new ConfigurationExtensionsMainModel(configurationExtensions);
+
+            var outputConfigurationExtensions = templateServiceCollectionExtensions.Render(classNamesModel, member => member.Name);
+            outputList.Add(("ConfigurationExtensions.cs", outputConfigurationExtensions));
+
+            return outputList;
+        }
+
+        private (List<KeyValuePair<string, string>> properties, List<ConfigurationExtensionsModel> configurationExtensionsModels) GenerateProperties(IGrouping<string, JProperty> grouppedProperties)
+        {
+            var properties = new List<KeyValuePair<string, string>>();
+            var configurationExtensions = new List<ConfigurationExtensionsModel>();
 
             foreach (var property in grouppedProperties.Distinct(new JPropertyEqualityComparer()))
             {
+                var (propertyName, type) = GetTypeAndName(property);
+
                 if (!property.Name.IsIdentifierValid())
                 {
+                    var index = property.Path.IndexOf($"['{property.Name}']");
+                    if(index <= 0)
+                    {
+                        continue;
+                    }
+
+                    var sanitizedPath = property.Path.Remove(index);
+                    sanitizedPath = sanitizedPath.Replace('.', ':');
+                    sanitizedPath += sanitizedPath.Length > 0 ? $":{property.Name}" : string.Empty;
+                    configurationExtensions.Add(new ConfigurationExtensionsModel(type, sanitizedPath, propertyName.Sanitize()));
                     continue;
                 }
 
-                var (sanitizedName, type) = GetTypeAndName(property);
-                properties.Add(new KeyValuePair<string, string>(type, sanitizedName));
+                properties.Add(new KeyValuePair<string, string>(type, propertyName));
             }
 
-            return properties;
+            return (properties, configurationExtensions);
         }
 
-        private static (string sanitizedName, string type) GetTypeAndName(JProperty property)
-        {            
-            var sanitizedName = property.Name;
-           
+        private static (string propertyName, string type) GetTypeAndName(JProperty property)
+        {
+            var propertyName = property.Name;
+
             var type = string.Empty;
             if (property.Value.Type == JTokenType.Array)
             {
@@ -97,17 +142,17 @@ namespace AppSettingsGenerator
                 }
                 else
                 {
-                    type = $"System.Generic.List<{sanitizedName}>";
+                    type = $"System.Generic.List<{propertyName}>";
                 }
-                return (sanitizedName, type);
+                return (propertyName, type);
             }
             else
             {
-                type = property.Value.Children().Any() ? sanitizedName : property.Value.ToString().GetTypeToGenerate();
+                type = property.Value.Children().Any() ? propertyName : property.Value.ToString().GetTypeToGenerate();
             }
 
-            return (sanitizedName, type);
+            return (propertyName, type);
         }
-    }    
+    }
 
 }

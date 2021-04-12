@@ -18,10 +18,12 @@
 
   <ItemGroup>
     <None Remove="AppSettings.sbntxt" />
+    <None Remove="IConfigurationExtensions.sbntxt" />
     <None Remove="ServiceCollectionExtensions.sbntxt" />
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="IConfigurationExtensions.sbntxt" />
     <EmbeddedResource Include="ServiceCollectionExtensions.sbntxt" />
     <EmbeddedResource Include="AppSettings.sbntxt">
     </EmbeddedResource>

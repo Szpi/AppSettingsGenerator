@@ -35,16 +35,15 @@ namespace AppSettings.Generator.Tests
 
             appsettings.generatedClass.Should().Contain("public string popularity { get; set; }");
 
-            //invalid
-            appsettings.generatedClass.Should().NotContain("public _object _object { get; set; }");
-
             appsettings.generatedClass.Should().Contain("public System.TimeSpan Timespan_1 { get; set; }");
             appsettings.generatedClass.Should().Contain("public System.DateTime DateTime_1 { get; set; }");
 
             appsettings.generatedClass.Should().Contain("public System.Generic.List<System.DateTime> Array_1 { get; set; }");
             appsettings.generatedClass.Should().Contain("public System.Generic.List<string> Array_2 { get; set; }");
 
-            generated.Select(x => x.fileName).Should().ContainSingle(x => x == "_object.cs");
+            // invalid identifier skip
+            appsettings.generatedClass.Should().NotContain("public _object _object { get; set; }");
+            generated.Select(x => x.fileName).Should().NotContain(x => x == "_object.cs");
 
         }        
     }

@@ -42,7 +42,7 @@ namespace WebApplication1
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            var a = Configuration.GetValue<bool>("Testooooo:Flag");
+            var a = Configuration.GetValue<string>("My.Settings:My.Test");
             //var test = app.ApplicationServices.GetService<IOptions<AppSettings>>();
            // var test1 = app.ApplicationServices.GetService<IOptions<MySettings>>();
             //var sdas = test1.Value.MyTest;
