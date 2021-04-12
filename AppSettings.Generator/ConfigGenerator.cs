@@ -109,6 +109,11 @@ namespace AppSettingsGenerator
 
                 if (!property.Name.IsIdentifierValid())
                 {
+                    if(property.Value.Type == JTokenType.Array || property.Value.Type == JTokenType.Object)
+                    {
+                        continue;
+                    }
+
                     var index = property.Path.IndexOf($"['{property.Name}']");
                     if(index <= 0)
                     {

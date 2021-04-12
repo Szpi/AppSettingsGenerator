@@ -3,5 +3,10 @@
     "LogLevel2": {
       "Microsoft,[Host.ing,Lifetime1": 4
     }
+  },
+  "MyArra......y": {
+    "testWrongClass...[][]2": {
+      "Microsoft,[Host.ing,Lifetime1": []
+    }
   }
 }
