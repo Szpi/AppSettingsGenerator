@@ -11,7 +11,8 @@ namespace AppSettingsGenerator
 {
     internal class ConfigGenerator
     {
-        public IEnumerable<(string fileName, string generatedClass)> Generate(string filePath)
+        public (IEnumerable<(string fileName, string generatedClass)> outputFiles,
+                IEnumerable<(string invalidIdentifierName, string invalidIdentifierNamePath)> invalidIdentifiers) Generate(string filePath)
         {
             var config = JObject.Parse(File.ReadAllText(filePath));
 
@@ -25,31 +26,42 @@ namespace AppSettingsGenerator
             var template = Template.Parse(EmbeddedResource.GetContent(file), file);
 
             var outputList = new List<(string fileName, string generatedClass)>();
-            var classNames = GenerateConfig(configJProperties, template, outputList);
+            var (classNames, invalidIdentifiers) = GenerateConfig(configJProperties, template, outputList);
 
             outputList = GenerateServiceExtensions(outputList, classNames);
 
-            return outputList;
+            return (outputList, invalidIdentifiers);
         }
 
-        private List<string> GenerateConfig(List<IGrouping<string, JProperty>> configJProperties, Template template, List<(string fileName, string generatedClass)> outputList)
+        private (List<string> classNames, IEnumerable<(string invalidIdentifierName, string invalidIdentifierNamePath)> invalidIdentifiers) GenerateConfig(
+            List<IGrouping<string, JProperty>> configJProperties, Template template, List<(string fileName, string generatedClass)> outputList)
         {
             var classNames = new List<string>();
             var configurationExtensionsModel = new List<ConfigurationExtensionsModel>();
+            var invalidIdentifiersMain = new List<(string invalidIdentifierName, string invalidIdentifierNamePath)>();
             foreach (var grouppedProperties in configJProperties)
             {
-                var (properties, configurationExtensions) = GenerateProperties(grouppedProperties);
+                var (properties, configurationExtensions, invalidIdentifiers) = GenerateProperties(grouppedProperties);
 
                 configurationExtensionsModel.AddRange(configurationExtensions);
+                invalidIdentifiersMain.AddRange(invalidIdentifiers);
+
+                if (!grouppedProperties.Key.IsIdentifierValid())
+                {
+                    var alreadyAdded = invalidIdentifiersMain.FirstOrDefault(x => x.invalidIdentifierName == grouppedProperties.Key);
+                    if (alreadyAdded.invalidIdentifierName == null)
+                    {
+                        invalidIdentifiersMain.Add((grouppedProperties.Key, grouppedProperties.Key));
+                    }
+
+                    continue;
+                }
+
                 if (!properties.Any())
                 {
                     continue;
                 }
 
-                if (!grouppedProperties.Key.IsIdentifierValid())
-                {
-                    continue;
-                }
 
                 var className = grouppedProperties.Key;
                 if (string.IsNullOrWhiteSpace(className))
@@ -64,7 +76,7 @@ namespace AppSettingsGenerator
             }
 
             outputList = GenerateInvalidIdentifiers(outputList, configurationExtensionsModel.Distinct().ToList());
-            return classNames;
+            return (classNames, invalidIdentifiersMain);
         }
 
         private static List<(string fileName, string generatedClass)> GenerateServiceExtensions(List<(string fileName, string generatedClass)> outputList, List<string> classNames)
@@ -98,10 +110,13 @@ namespace AppSettingsGenerator
             return outputList;
         }
 
-        private (List<KeyValuePair<string, string>> properties, List<ConfigurationExtensionsModel> configurationExtensionsModels) GenerateProperties(IGrouping<string, JProperty> grouppedProperties)
+        private (List<KeyValuePair<string, string>> properties,
+            List<ConfigurationExtensionsModel> configurationExtensionsModels,
+            IEnumerable<(string invalidIdentifierName, string invalidIdentifierNamePath)> invalidIdentifiers) GenerateProperties(IGrouping<string, JProperty> grouppedProperties)
         {
             var properties = new List<KeyValuePair<string, string>>();
             var configurationExtensions = new List<ConfigurationExtensionsModel>();
+            var invalidIdentifiers = new List<(string invalidIdentifierName, string invalidIdentifierNamePath)>();
 
             foreach (var property in grouppedProperties.Distinct(new JPropertyEqualityComparer()))
             {
@@ -109,13 +124,8 @@ namespace AppSettingsGenerator
 
                 if (!property.Name.IsIdentifierValid())
                 {
-                    if(property.Value.Type == JTokenType.Array || property.Value.Type == JTokenType.Object)
-                    {
-                        continue;
-                    }
-
                     var index = property.Path.IndexOf($"['{property.Name}']");
-                    if(index <= 0)
+                    if (index <= 0)
                     {
                         continue;
                     }
@@ -123,14 +133,22 @@ namespace AppSettingsGenerator
                     var sanitizedPath = property.Path.Remove(index);
                     sanitizedPath = sanitizedPath.Replace('.', ':');
                     sanitizedPath += sanitizedPath.Length > 0 ? $":{property.Name}" : string.Empty;
-                    configurationExtensions.Add(new ConfigurationExtensionsModel(type, sanitizedPath, propertyName.Sanitize()));
+
+                    invalidIdentifiers.Add((property.Name, sanitizedPath));
+
+                    if (property.Value.Type == JTokenType.Array || property.Value.Type == JTokenType.Object)
+                    {
+                        continue;
+                    }
+
+                    configurationExtensions.Add(new ConfigurationExtensionsModel(type, sanitizedPath, propertyName.Sanitize(), property.Name));
                     continue;
                 }
 
                 properties.Add(new KeyValuePair<string, string>(type, propertyName));
             }
 
-            return (properties, configurationExtensions);
+            return (properties, configurationExtensions, invalidIdentifiers);
         }
 
         private static (string propertyName, string type) GetTypeAndName(JProperty property)

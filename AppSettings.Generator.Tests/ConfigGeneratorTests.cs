@@ -21,7 +21,7 @@ namespace AppSettings.Generator.Tests
         [Test]
         public void Generate_FromMyArrayFile_ShouldContains_ListOfMyArray()
         {
-            var generated = _configGenerator.Generate("MyArray.json");
+            var (generated, _) = _configGenerator.Generate("MyArray.json");
 
             generated.Select(x => x.fileName).Should().ContainSingle(x => x == "MyArray.cs");
             var appsettings = generated.FirstOrDefault(x => x.fileName == "AppSettings.cs");
@@ -32,7 +32,7 @@ namespace AppSettings.Generator.Tests
         [Test]
         public void Generate_FromMyArrayFile_Should_CreateValidIdentifier()
         {
-            var generated = _configGenerator.Generate("MyArray.json");
+            var (generated, _) = _configGenerator.Generate("MyArray.json");
 
             generated.Select(x => x.fileName).Should().ContainSingle(x => x == "MyArray.cs");
             var logLevel = generated.FirstOrDefault(x => x.fileName == "LogLevel2.cs");
@@ -43,7 +43,7 @@ namespace AppSettings.Generator.Tests
         [Test]
         public void Generate_FromMultipleArrays_ShouldContains_ListOfMyArray()
         {
-            var generated = _configGenerator.Generate("MultipleArrays.json");
+            var (generated, _) = _configGenerator.Generate("MultipleArrays.json");
 
             generated.Select(x => x.fileName).Should().ContainSingle(x => x == "cars.cs");
             generated.Select(x => x.fileName).Should().NotContain(x => x == "models.cs");
@@ -57,7 +57,7 @@ namespace AppSettings.Generator.Tests
         [Test]
         public void Generate_FromMultipleArraysObjects_ShouldContains_ListOfMyArray()
         {
-            var generated = _configGenerator.Generate("MultipleArraysObjects.json");
+            var (generated, _) = _configGenerator.Generate("MultipleArraysObjects.json");
 
             generated.Select(x => x.fileName).Should().ContainSingle(x => x == "cars.cs");
             generated.Select(x => x.fileName).Should().ContainSingle(x => x == "models.cs");

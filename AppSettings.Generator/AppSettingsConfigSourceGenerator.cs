@@ -25,19 +25,26 @@ namespace AppSettingsGenerator
             if (!resourceFiles.Any())
             {
                 context.ReportDiagnostic(Diagnostic.Create(
-                    new DiagnosticDescriptor("APG001", "AppSettings configuration not found", "AppSettings configuration not found. Please add appsettings.json file as AdditionalFiles property in project configuration (.csproj)", "Compiler", DiagnosticSeverity.Error, true)
+                    new DiagnosticDescriptor("APG001", "AppSettings configuration not found", "AppSettings configuration not found. Please add appsettings.json file as AdditionalFiles property in project configuration (.csproj)", "AppSettingsGenerator.Compiler", DiagnosticSeverity.Error, true)
                     , null));
                 return;
             }
 
             var resourcePath = resourceFiles.FirstOrDefault().Path;
             var configGenerator = new ConfigGenerator();
-            var generatedClasses = configGenerator.Generate(resourcePath);            
+            var (generatedClasses, invalidIdentifiers) = configGenerator.Generate(resourcePath);
 
             foreach (var generatedClass in generatedClasses)
             {
                 context.AddSource(generatedClass.fileName,
                     SourceText.From(generatedClass.generatedClass, Encoding.UTF8));
+            }
+
+            foreach (var invalidIdentifier in invalidIdentifiers)
+            {
+                context.ReportDiagnostic(Diagnostic.Create(
+                    new DiagnosticDescriptor("APG002", "AppSettings invalid identifier", $"Invalid identifier detected {invalidIdentifier.invalidIdentifierName} in path {invalidIdentifier.invalidIdentifierNamePath}", "AppSettingsGenerator.Naming", DiagnosticSeverity.Warning, true)
+                    , null));
             }
         }        
     }

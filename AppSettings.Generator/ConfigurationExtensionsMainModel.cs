@@ -6,15 +6,17 @@ namespace AppSettingsGenerator
 {
     internal class ConfigurationExtensionsModel
     {
-        public ConfigurationExtensionsModel(string type, string propertyPath, string sanitizedName)
+        public ConfigurationExtensionsModel(string type, string propertyPath, string sanitizedName, string name)
         {
             Type = type;
             PropertyPath = propertyPath;
             SanitizedName = sanitizedName;
+            Name = name;
         }
         public string Type { get; }
         public string PropertyPath { get; }
         public string SanitizedName { get; }
+        public string Name { get; }
     }
 
     internal class ConfigurationExtensionsMainModel

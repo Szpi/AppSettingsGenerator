@@ -21,7 +21,7 @@ namespace AppSettings.Generator.Tests
         [Test]
         public void Generate_FromBasicDataTypes_Should_CreateBasicTypes()
         {
-            var generated = _configGenerator.Generate("BasicDataTypes.json");
+            var (generated, _) = _configGenerator.Generate("BasicDataTypes.json");
 
             var appsettings = generated.FirstOrDefault(x => x.fileName == "AppSettings.cs");
 

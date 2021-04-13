@@ -21,7 +21,7 @@ namespace AppSettings.Generator.Tests
         [Test]
         public void Generate_ConfigurationExtensions_WhenPropertyHasInvalidIdentifier()
         {
-            var generated = _configGenerator.Generate("InvalidIdentifier.json");
+            var (generated,_) = _configGenerator.Generate("InvalidIdentifier.json");
 
             generated.Select(x => x.fileName).Should().ContainSingle(x => x == "ConfigurationExtensions.cs");
             var configurationExtensions = generated.FirstOrDefault(x => x.fileName == "ConfigurationExtensions.cs");
@@ -32,12 +32,19 @@ namespace AppSettings.Generator.Tests
         [Test]
         public void Generate_ConfigurationExtensions_WhenClassHasInvalidIdentifier()
         {
-            var generated = _configGenerator.Generate("InvalidIdentifier.json");
+            var (generated, invalidIdentifiers) = _configGenerator.Generate("InvalidIdentifier.json");
 
             generated.Select(x => x.fileName).Should().ContainSingle(x => x == "ConfigurationExtensions.cs");
             var configurationExtensions = generated.FirstOrDefault(x => x.fileName == "ConfigurationExtensions.cs");
 
             configurationExtensions.generatedClass.Should().NotContain(@"testWrongClass");
+
+            invalidIdentifiers.Should().HaveCount(4);
+            invalidIdentifiers.First().invalidIdentifierName.Should().Be("Microsoft,[Host.ing,Lifetime1");
+            invalidIdentifiers.First().invalidIdentifierNamePath.Should().Be("MyArray:LogLevel2:Microsoft,[Host.ing,Lifetime1");
+
+            invalidIdentifiers.Last().invalidIdentifierName.Should().Be("Microsoft,[Host.ing,Lifetime1");
+            invalidIdentifiers.Last().invalidIdentifierNamePath.Should().Be("['MyArra::::::y']['testWrongClass:::[][]2']:Microsoft,[Host.ing,Lifetime1");
         }
 
     }
