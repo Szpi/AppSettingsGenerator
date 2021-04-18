@@ -5,7 +5,9 @@ using Scriban;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+#if DEBUG
 [assembly: InternalsVisibleTo("AppSettingsGenerator.Tests")]
+#endif
 
 namespace AppSettingsGenerator
 {
@@ -48,8 +50,8 @@ namespace AppSettingsGenerator
 
                 if (!grouppedProperties.Key.IsIdentifierValid())
                 {
-                    var alreadyAdded = invalidIdentifiersMain.FirstOrDefault(x => x.invalidIdentifierName == grouppedProperties.Key);
-                    if (alreadyAdded.invalidIdentifierName == null)
+                    var (invalidIdentifierName, invalidIdentifierNamePath) = invalidIdentifiersMain.FirstOrDefault(x => x.invalidIdentifierName == grouppedProperties.Key);
+                    if (invalidIdentifierName == null)
                     {
                         invalidIdentifiersMain.Add((grouppedProperties.Key, grouppedProperties.Key));
                     }

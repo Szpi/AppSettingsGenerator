@@ -9,6 +9,7 @@
 
 using System.CodeDom.Compiler;
 using System.Runtime.CompilerServices;
+using Microsoft.Extensions.Configuration;
 
 namespace Configuration.Generated
 {
@@ -19,7 +20,7 @@ namespace Configuration.Generated
 
         public static {{ prop.Type }} Get{{ prop.SanitizedName }}(this IConfiguration configuration)
         {
-            return configuration.GetValue<{{prop.Type}}>("{{prop.PropertyPath}}")
+            return configuration.GetValue<{{prop.Type}}>("{{prop.PropertyPath}}");
         }
 
         {{~ end ~}}

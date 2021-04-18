@@ -1,7 +1,5 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
-using System;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -40,10 +38,10 @@ namespace AppSettingsGenerator
                     SourceText.From(generatedClass.generatedClass, Encoding.UTF8));
             }
 
-            foreach (var invalidIdentifier in invalidIdentifiers)
+            foreach (var (invalidIdentifierName, invalidIdentifierNamePath) in invalidIdentifiers)
             {
                 context.ReportDiagnostic(Diagnostic.Create(
-                    new DiagnosticDescriptor("APG002", "AppSettings invalid identifier", $"Invalid identifier detected {invalidIdentifier.invalidIdentifierName} in path {invalidIdentifier.invalidIdentifierNamePath}", "AppSettingsGenerator.Naming", DiagnosticSeverity.Warning, true)
+                    new DiagnosticDescriptor("APG002", "AppSettings invalid identifier", $"Invalid identifier detected {invalidIdentifierName} in path {invalidIdentifierNamePath}", "AppSettingsGenerator.Naming", DiagnosticSeverity.Warning, true)
                     , null));
             }
         }        

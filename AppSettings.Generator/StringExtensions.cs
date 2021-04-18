@@ -27,42 +27,42 @@ namespace AppSettingsGenerator
 
         public static string GetTypeToGenerate(this string value)
         {
-            if (bool.TryParse(value, out var boolResult))
+            if (bool.TryParse(value, out var _))
             {
                 return "bool";
             }
 
-            if (int.TryParse(value, out var intResult))
+            if (int.TryParse(value, out var _))
             {
                 return "int";
             }
 
-            if (float.TryParse(value, out var floatResult))
+            if (float.TryParse(value, out var _))
             {
                 return "float";
             }
 
-            if (double.TryParse(value, out var doubleResult))
+            if (double.TryParse(value, out var _))
             {
                 return "double";
             }
 
-            if (byte.TryParse(value, out var byteResult))
+            if (byte.TryParse(value, out var _))
             {
                 return "byte";
             }
 
-            if (TimeSpan.TryParse(value, out var timeSpanResult))
+            if (TimeSpan.TryParse(value, out var _))
             {
                 return "System.TimeSpan";
             }
 
-            if (DateTime.TryParse(value, out var dateTimeResult))
+            if (DateTime.TryParse(value, out var _))
             {
                 return "System.DateTime";
             }
 
-            if (Guid.TryParse(value, out var guidResult))
+            if (Guid.TryParse(value, out var _))
             {
                 return "System.Guid";
             }
