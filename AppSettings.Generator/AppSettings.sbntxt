@@ -7,7 +7,6 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-using System.CodeDom.Compiler;
 using System.Runtime.CompilerServices;
 
 namespace Configuration.Generated

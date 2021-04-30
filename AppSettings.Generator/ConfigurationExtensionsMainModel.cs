@@ -28,4 +28,18 @@ namespace AppSettingsGenerator
             Properties = properties;
         }
     }
+
+
+    class ConfigurationExtensionsModelComparer : IEqualityComparer<ConfigurationExtensionsModel>
+    {
+        public bool Equals(ConfigurationExtensionsModel x, ConfigurationExtensionsModel y)
+        {
+            return x.Name == y.Name || x.SanitizedName == y.SanitizedName;
+        }
+
+        public int GetHashCode(ConfigurationExtensionsModel obj)
+        {
+            return obj.SanitizedName.GetHashCode();
+        }
+    }
 }

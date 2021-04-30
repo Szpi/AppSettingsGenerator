@@ -33,10 +33,10 @@ namespace WebApplication1
             //services.Configure<Testooooo>(Configuration.GetSection("Testooooo"));
             //services.Configure<AppSettings>(Configuration);
             services.Configure<WebApplication1.MySettings>(Configuration.GetSection("My.Settings"));
-            //services.ConfigureAppSettings(Configuration);
             //services.ConfigureTestooooo(Configuration);
             //services.ConfigureAllSections(Configuration);
             //services.ConfigureTestooooo(Configuration);
+            //services.ConfigureAllSections(Configuration);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

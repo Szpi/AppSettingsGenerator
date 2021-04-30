@@ -1,5 +1,7 @@
 ﻿using AppSettingsGenerator;
+using AppSettingsGenerator.Tests;
 using FluentAssertions;
+using FluentAssertions.Execution;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
@@ -26,7 +28,9 @@ namespace AppSettings.Generator.Tests
             generated.Select(x => x.fileName).Should().ContainSingle(x => x == "MyArray.cs");
             var appsettings = generated.FirstOrDefault(x => x.fileName == "AppSettings.cs");
 
-            appsettings.generatedClass.Should().Contain("public System.Generic.List<MyArray> MyArray { get; set; }");
+            appsettings.generatedClass.Should().Contain("public System.Collections.Generic.List<MyArray> MyArray { get; set; }");
+
+            AssertCompilation(generated);
         }
 
         [Test]
@@ -38,6 +42,8 @@ namespace AppSettings.Generator.Tests
             var logLevel = generated.FirstOrDefault(x => x.fileName == "LogLevel2.cs");
 
             logLevel.generatedClass.Should().NotContain("Microsoft,[Hosting,Lifetime1");
+
+            AssertCompilation(generated);
         }
 
         [Test]
@@ -50,8 +56,10 @@ namespace AppSettings.Generator.Tests
             var appsettings = generated.FirstOrDefault(x => x.fileName == "AppSettings.cs");
             var cars = generated.FirstOrDefault(x => x.fileName == "cars.cs");
 
-            appsettings.generatedClass.Should().Contain("public System.Generic.List<cars> cars { get; set; }");
-            cars.generatedClass.Should().Contain("public System.Generic.List<string> models { get; set; }");
+            appsettings.generatedClass.Should().Contain("public System.Collections.Generic.List<cars> cars { get; set; }");
+            cars.generatedClass.Should().Contain("public System.Collections.Generic.List<string> models { get; set; }");
+
+            AssertCompilation(generated);
         }
 
         [Test]
@@ -64,9 +72,18 @@ namespace AppSettings.Generator.Tests
             var appsettings = generated.FirstOrDefault(x => x.fileName == "AppSettings.cs");
             var cars = generated.FirstOrDefault(x => x.fileName == "cars.cs");
 
-            appsettings.generatedClass.Should().Contain("public System.Generic.List<cars> cars { get; set; }");
-            cars.generatedClass.Should().Contain("public System.Generic.List<models> models { get; set; }");
+            appsettings.generatedClass.Should().Contain("public System.Collections.Generic.List<cars> cars { get; set; }");
+            cars.generatedClass.Should().Contain("public System.Collections.Generic.List<models> models { get; set; }");
+
+            AssertCompilation(generated);
         }
-        
+
+        private void AssertCompilation(IEnumerable<(string fileName, string generatedClass)> generated)
+        {
+            var (compilationResult, reason) = new TestCodeCompiler().Compile(generated.Select(x => x.generatedClass));
+            using var assertionScope = new AssertionScope();
+            compilationResult.Should().BeTrue();
+            reason.Should().BeEmpty();
+        }
     }
 }

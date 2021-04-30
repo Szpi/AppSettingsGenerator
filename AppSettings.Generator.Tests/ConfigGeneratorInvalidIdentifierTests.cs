@@ -1,5 +1,7 @@
 ﻿using AppSettingsGenerator;
+using AppSettingsGenerator.Tests;
 using FluentAssertions;
+using FluentAssertions.Execution;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
@@ -27,6 +29,7 @@ namespace AppSettings.Generator.Tests
             var configurationExtensions = generated.FirstOrDefault(x => x.fileName == "ConfigurationExtensions.cs");
 
             configurationExtensions.generatedClass.Should().Contain(@"return configuration.GetValue<int>(""MyArray:LogLevel2:Microsoft,[Host.ing,Lifetime1"")");
+            AssertCompilation(generated);
         }
 
         [Test]
@@ -45,7 +48,16 @@ namespace AppSettings.Generator.Tests
 
             invalidIdentifiers.Last().invalidIdentifierName.Should().Be("Microsoft,[Host.ing,Lifetime1");
             invalidIdentifiers.Last().invalidIdentifierNamePath.Should().Be("['MyArra::::::y']['testWrongClass:::[][]2']:Microsoft,[Host.ing,Lifetime1");
+
+            AssertCompilation(generated);
         }
 
+        private void AssertCompilation(IEnumerable<(string fileName, string generatedClass)> generated)
+        {
+            var (compilationResult, reason) = new TestCodeCompiler().Compile(generated.Select(x => x.generatedClass));
+            
+            compilationResult.Should().BeTrue();
+            reason.Should().BeEmpty();
+        }
     }
 }

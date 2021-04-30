@@ -34,7 +34,7 @@
   </ItemGroup>-->
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="3.9.0" Pack="true" GeneratePathProperty="true" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="3.9.0" Pack="false" GeneratePathProperty="true" PrivateAssets="all" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" Pack="true" GeneratePathProperty="true" PrivateAssets="all" />
     <PackageReference Include="Scriban" Version="3.6.0" Pack="true" GeneratePathProperty="true" PrivateAssets="all" />
     <PackageReference Include="System.CodeDom" Version="6.0.0-preview.3.21201.4" Pack="true" GeneratePathProperty="true" PrivateAssets="all" />
@@ -46,7 +46,7 @@
     <RepositoryUrl>https://github.com/Szpi/AppSettingsGenerator</RepositoryUrl>
   </PropertyGroup>
   
-  <PropertyGroup>
+  <!--<PropertyGroup>
     <GetTargetPathDependsOn>$(GetTargetPathDependsOn);GetDependencyTargetPaths</GetTargetPathDependsOn>
   </PropertyGroup>
   
@@ -58,13 +58,13 @@
       <TargetPathWithTargetPlatformMoniker Include="$(PKGMicrosoft_CodeAnalysis)\lib\netstandard2.0\Microsoft.CodeAnalysis.dll" IncludeRuntimeDependency="false" />
       <TargetPathWithTargetPlatformMoniker Include="$(PKGMicrosoft_CodeAnalysis_CSharp)\lib\netstandard2.0\Microsoft.CodeAnalysis.CSharp.dll" IncludeRuntimeDependency="false" />
     </ItemGroup>
-  </Target>
+  </Target>-->
   
   <PropertyGroup>    
     <Copyright>Piotr Szkudlarski</Copyright>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <RepositoryUrl>https://github.com/Szpi/AppSettingsGenerator</RepositoryUrl>
-    <Description>SourceGenerator that generates .cs configuration stored in appsettings.json</Description>
+    <Description>SourceGenerator that generates .cs configuration stored in json file e.g. appsettings.json</Description>
     <Authors>Piotr Szkudlarski</Authors>
     <Company>Piotr Szkudlarski</Company>
     <PackageId>AppSettingsGenerator</PackageId>

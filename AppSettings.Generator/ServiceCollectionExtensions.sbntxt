@@ -7,7 +7,6 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-using System.CodeDom.Compiler;
 using System.Runtime.CompilerServices;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
@@ -27,6 +26,7 @@ namespace Configuration.Generated
 
         public static void ConfigureAllSections(this IServiceCollection services, IConfiguration configuration)
         {
+            services.Configure<Configuration.Generated.AppSettings>(configuration);
          {{~ for className in ClassNames ~}}
             services.Configure<Configuration.Generated.{{ className }}>(configuration.GetSection("{{ className }}"));
          {{~ end ~}} 

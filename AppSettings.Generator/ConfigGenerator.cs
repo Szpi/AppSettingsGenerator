@@ -5,16 +5,14 @@ using Scriban;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-#if DEBUG
 [assembly: InternalsVisibleTo("AppSettingsGenerator.Tests")]
-#endif
 
 namespace AppSettingsGenerator
 {
     internal class ConfigGenerator
     {
         public (IEnumerable<(string fileName, string generatedClass)> outputFiles,
-                IEnumerable<(string invalidIdentifierName, string invalidIdentifierNamePath)> invalidIdentifiers) Generate(string filePath)
+                IEnumerable<(string invalidIdentifierName, string invalidIdentifierNamePath, string sanitizedIdentifier)> invalidIdentifiers) Generate(string filePath)
         {
             var config = JObject.Parse(File.ReadAllText(filePath));
 
@@ -35,12 +33,12 @@ namespace AppSettingsGenerator
             return (outputList, invalidIdentifiers);
         }
 
-        private (List<string> classNames, IEnumerable<(string invalidIdentifierName, string invalidIdentifierNamePath)> invalidIdentifiers) GenerateConfig(
+        private (List<string> classNames, IEnumerable<(string invalidIdentifierName, string invalidIdentifierNamePath, string sanitizedIdentifier)> invalidIdentifiers) GenerateConfig(
             List<IGrouping<string, JProperty>> configJProperties, Template template, List<(string fileName, string generatedClass)> outputList)
         {
             var classNames = new List<string>();
             var configurationExtensionsModel = new List<ConfigurationExtensionsModel>();
-            var invalidIdentifiersMain = new List<(string invalidIdentifierName, string invalidIdentifierNamePath)>();
+            var invalidIdentifiersMain = new List<(string invalidIdentifierName, string invalidIdentifierNamePath, string sanitizedIdentifier)>();
             foreach (var grouppedProperties in configJProperties)
             {
                 var (properties, configurationExtensions, invalidIdentifiers) = GenerateProperties(grouppedProperties);
@@ -50,34 +48,32 @@ namespace AppSettingsGenerator
 
                 if (!grouppedProperties.Key.IsIdentifierValid())
                 {
-                    var (invalidIdentifierName, invalidIdentifierNamePath) = invalidIdentifiersMain.FirstOrDefault(x => x.invalidIdentifierName == grouppedProperties.Key);
+                    var (invalidIdentifierName, invalidIdentifierNamePath, sanitizedIdentifier) = invalidIdentifiersMain.FirstOrDefault(x => x.invalidIdentifierName == grouppedProperties.Key);
                     if (invalidIdentifierName == null)
                     {
-                        invalidIdentifiersMain.Add((grouppedProperties.Key, grouppedProperties.Key));
+                        invalidIdentifiersMain.Add((grouppedProperties.Key, grouppedProperties.Key, grouppedProperties.Key.Sanitize()));
                     }
 
                     continue;
                 }
-
-                if (!properties.Any())
-                {
-                    continue;
-                }
-
 
                 var className = grouppedProperties.Key;
                 if (string.IsNullOrWhiteSpace(className))
                 {
                     className = "AppSettings";
                 }
-                classNames.Add(className);
+                else
+                {
+                    classNames.Add(className);
+                }
                 var model = new Model(className, properties);
                 var output = template.Render(model, member => member.Name);
 
                 outputList.Add(($"{className}.cs", output));
             }
 
-            outputList = GenerateInvalidIdentifiers(outputList, configurationExtensionsModel.Distinct().ToList());
+            outputList = GenerateInvalidIdentifiers(outputList, 
+                configurationExtensionsModel.Distinct(new ConfigurationExtensionsModelComparer()).ToList());
             return (classNames, invalidIdentifiersMain);
         }
 
@@ -114,11 +110,11 @@ namespace AppSettingsGenerator
 
         private (List<KeyValuePair<string, string>> properties,
             List<ConfigurationExtensionsModel> configurationExtensionsModels,
-            IEnumerable<(string invalidIdentifierName, string invalidIdentifierNamePath)> invalidIdentifiers) GenerateProperties(IGrouping<string, JProperty> grouppedProperties)
+            IEnumerable<(string invalidIdentifierName, string invalidIdentifierNamePath, string sanitizedIdentifier)> invalidIdentifiers) GenerateProperties(IGrouping<string, JProperty> grouppedProperties)
         {
             var properties = new List<KeyValuePair<string, string>>();
             var configurationExtensions = new List<ConfigurationExtensionsModel>();
-            var invalidIdentifiers = new List<(string invalidIdentifierName, string invalidIdentifierNamePath)>();
+            var invalidIdentifiers = new List<(string invalidIdentifierName, string invalidIdentifierNamePath, string sanitizedIdentifier)>();
 
             foreach (var property in grouppedProperties.Distinct(new JPropertyEqualityComparer()))
             {
@@ -136,14 +132,14 @@ namespace AppSettingsGenerator
                     sanitizedPath = sanitizedPath.Replace('.', ':');
                     sanitizedPath += sanitizedPath.Length > 0 ? $":{property.Name}" : string.Empty;
 
-                    invalidIdentifiers.Add((property.Name, sanitizedPath));
+                    invalidIdentifiers.Add((property.Name, sanitizedPath, sanitizedPath));
 
                     if (property.Value.Type == JTokenType.Array || property.Value.Type == JTokenType.Object)
                     {
                         continue;
                     }
 
-                    configurationExtensions.Add(new ConfigurationExtensionsModel(type, sanitizedPath, propertyName.Sanitize(), property.Name));
+                    configurationExtensions.Add(new ConfigurationExtensionsModel(type, sanitizedPath, sanitizedPath.Sanitize(), sanitizedPath));
                     continue;
                 }
 
@@ -163,11 +159,11 @@ namespace AppSettingsGenerator
                 if (property.Value.Children().All(x => x.Type != JTokenType.Object))
                 {
                     var childrenTypes = property.Value.Children().Cast<JValue>().Select(x => x.Value.ToString().GetTypeToGenerate());
-                    type = childrenTypes.Distinct().Count() == 1 ? $"System.Generic.List<{childrenTypes.First()}>" : "System.Generic.List<string>";
+                    type = childrenTypes.Distinct().Count() == 1 ? $"System.Collections.Generic.List<{childrenTypes.First()}>" : "System.Collections.Generic.List<string>";
                 }
                 else
                 {
-                    type = $"System.Generic.List<{propertyName}>";
+                    type = $"System.Collections.Generic.List<{propertyName}>";
                 }
                 return (propertyName, type);
             }

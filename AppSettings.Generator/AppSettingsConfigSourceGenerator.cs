@@ -15,20 +15,25 @@ namespace AppSettingsGenerator
 
         public void Execute(GeneratorExecutionContext context)
         {
-            var resourceFiles = context.AdditionalFiles
-                    .Where(f =>
-                    Path.GetFileNameWithoutExtension(f.Path)?
-                    .StartsWith("appSettings", System.StringComparison.OrdinalIgnoreCase) ?? false);
+            var resourceFile = context.AdditionalFiles
+                    .FirstOrDefault(f =>
+                    Path.GetFileName(f.Path)?
+                    .EndsWith(".json", System.StringComparison.OrdinalIgnoreCase) ?? false);
 
-            if (!resourceFiles.Any())
+            if (resourceFile is null)
             {
                 context.ReportDiagnostic(Diagnostic.Create(
-                    new DiagnosticDescriptor("APG001", "AppSettings configuration not found", "AppSettings configuration not found. Please add appsettings.json file as AdditionalFiles property in project configuration (.csproj)", "AppSettingsGenerator.Compiler", DiagnosticSeverity.Error, true)
+                    new DiagnosticDescriptor("APG001",
+                    "AppSettings configuration not found",
+                    @"AppSettings configuration not found. Please add proper configuration: <ItemGroup><AdditionalFiles Include=""appsettings.json""/></ItemGroup> to .csproj",
+                    "AppSettingsGenerator.Compiler", 
+                    DiagnosticSeverity.Error, 
+                    true)
                     , null));
                 return;
             }
 
-            var resourcePath = resourceFiles.FirstOrDefault().Path;
+            var resourcePath = resourceFile.Path;
             var configGenerator = new ConfigGenerator();
             var (generatedClasses, invalidIdentifiers) = configGenerator.Generate(resourcePath);
 
@@ -38,12 +43,12 @@ namespace AppSettingsGenerator
                     SourceText.From(generatedClass.generatedClass, Encoding.UTF8));
             }
 
-            foreach (var (invalidIdentifierName, invalidIdentifierNamePath) in invalidIdentifiers)
+            foreach (var (invalidIdentifierName, invalidIdentifierNamePath, sanitizedIdentifier) in invalidIdentifiers)
             {
                 context.ReportDiagnostic(Diagnostic.Create(
-                    new DiagnosticDescriptor("APG002", "AppSettings invalid identifier", $"Invalid identifier detected {invalidIdentifierName} in path {invalidIdentifierNamePath}", "AppSettingsGenerator.Naming", DiagnosticSeverity.Warning, true)
+                    new DiagnosticDescriptor("APG002", "AppSettings invalid identifier", $"Invalid identifier detected {invalidIdentifierName} in path {invalidIdentifierNamePath}. This property was skipped during settings generation. You can access it via extension method over IConfiguration.Get{sanitizedIdentifier}()", "AppSettingsGenerator.Naming", DiagnosticSeverity.Info, true)
                     , null));
             }
-        }        
+        }
     }
 }
