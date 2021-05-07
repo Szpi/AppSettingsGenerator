@@ -44,7 +44,7 @@ namespace Configuration.Generated
 
     }
 }
-
+```
 AppSettings.cs is the root configuration file.
 
 ## Extend generated classes
