@@ -1,5 +1,5 @@
 # AppSettingsGenerator
-![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)
+![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg) [![Latest version](https://img.shields.io/nuget/v/AppSettingsGenerator)](https://www.nuget.org/packages/AppSettingsGenerator/)
 
 ## Quick start
 Configure file from which settings should be generated in .csproj by adding:
@@ -42,6 +42,15 @@ namespace Configuration.Generated
 
         public string Microsoft { get; set; }
 
+    }
+}
+
+namespace Configuration.Generated
+{
+    [CompilerGenerated]
+    public partial class AppSettings
+    {
+        public Logging Logging { get; set; }
     }
 }
 ```
